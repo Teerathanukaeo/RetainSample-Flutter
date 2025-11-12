@@ -8,7 +8,7 @@ import '../../bloc/BlocEvent/ChangePageEvent.dart';
 import '../../bloc/cubit/Rebuild.dart';
 import '../../data/global.dart';
 import '../../mainBody.dart';
-import '../../page/page1.dart';
+import '../../page/P1MainRetain/P1MainRetain.dart';
 
 void WORNINGpop(
     BuildContext contextin, List<String> text, double? height, double? width) {

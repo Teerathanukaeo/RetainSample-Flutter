@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newmaster/page/P2OverviewRetain/P2OverviewRetain.dart';
 
 import '../../bloc/BlocEvent/LoginEvent.dart';
 import '../../mainBody.dart';
-import '../../page/page1.dart';
-import '../../page/page2.dart';
-import '../../page/page3.dart';
+import '../../page/P1MainRetain/P1MainRetain.dart';
 import '../../page/page4.dart';
 import '../../page/page5.dart';
 import 'sub_widget.dart';
@@ -75,29 +74,14 @@ class Data_Menu_mainmenu extends StatelessWidget {
                   ),
                 ))),
         menu_normal(
-          name: "Page1",
+          name: "ลงทะเบียนสารเคมี",
           page: Page1(),
           Lv: 1,
         ),
         menu_normal(
-          name: "Page2",
+          name: "Overview",
           page: Page2(),
           Lv: 1,
-        ),
-        menu_normal(
-          name: "Page3",
-          page: Page3(),
-          Lv: 1,
-        ),
-        menu_normal(
-          name: "Page4",
-          page: Page4(),
-          Lv: 1,
-        ),
-        menu_normal(
-          name: "Page5",
-          page: Page5(),
-          Lv: 5,
         ),
         menu_logout(
           name: "Logout",

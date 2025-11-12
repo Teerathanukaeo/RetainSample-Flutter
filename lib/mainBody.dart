@@ -100,12 +100,12 @@ class MainBody extends StatelessWidget {
     MainBodyContext = context;
 
     return Scaffold(
-        appBar: AppBar(
-          shadowColor: Colors.transparent,
-          backgroundColor: const Color(0xFF0b1327),
-          actions: <Widget>[App_Bar()],
-        ),
-        drawer: MainMenu(),
+        // appBar: AppBar(
+        //   shadowColor: Colors.transparent,
+        //   backgroundColor: const Color(0xFF0b1327),
+        //   actions: <Widget>[App_Bar()],
+        // ),
+        // drawer: MainMenu(),
         body: page);
   }
 }
