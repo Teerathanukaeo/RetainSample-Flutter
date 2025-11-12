@@ -39,8 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider<BlocPageRebuild>(
-        create: (BuildContext context) =>
-            BlocPageRebuild(), //For rebuild only page inside without app bar/left menu
+        create: (BuildContext context) => BlocPageRebuild(), //For rebuild only page inside without app bar/left menu
       ),
     ], child: const MainContext());
   }
@@ -54,7 +53,7 @@ class MainContext extends MyApp {
     return BlocBuilder<BlocPageRebuild, bool>(
       builder: (_, e) {
         return MaterialApp(
-          title: 'Flutter Login',
+          title: 'Retain Sample',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
