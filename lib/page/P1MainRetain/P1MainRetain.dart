@@ -248,29 +248,29 @@ class _Page1BodyState extends State<Page1Body> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          items: ["Acid", "Alkaline", "Chrom", "Nox Rust"]
-                              .map(
-                                (e) => DropdownMenuItem(value: e, child: Text(e)),
-                              )
-                              .toList(),
+                          items: ["Acid", "Alkaline", "Chrom", "Nox Rust"].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                           onChanged: (val) {
                             setState(() {
-                              selectedPhysical = null;
                               selectedType = val;
-                              // เงื่อนไขสำหรับ LocationWaste ตาม selectedType
-                              if (val == "Acid") {
-                                LocationWaste = "Gutter at Liquid plant";
-                                selectedPhysical = "Liquid";
-                              } else if (val == "Chrom") {
-                                LocationWaste = "Gutter at reaction tank No.17";
+
+                              // ---------- ตั้งค่า selectedPhysical อัตโนมัติ ----------
+                              if (val == "Acid" || val == "Chrom") {
                                 selectedPhysical = "Liquid";
                               } else if (val == "Nox Rust") {
-                                LocationWaste = "IBC for Used Oil";
                                 selectedPhysical = "Noxrust";
-                              } else if (val == "Powder") {
-                                LocationWaste = "IBC for Powder";
                               } else if (val == "Alkaline") {
-                                LocationWaste = "Gutter at Liquid plant";
+                                selectedPhysical = null;
+                              }
+
+                              // ---------- LocationWaste ----------
+                              if (val == "Acid") {
+                                LocationWaste = "Gutter at Liquid plant for Acid";
+                              } else if (val == "Chrom") {
+                                LocationWaste = "Gutter at reaction tank No.17";
+                              } else if (val == "Nox Rust") {
+                                LocationWaste = "IBC for Used Oil";
+                              } else if (val == "Alkaline") {
+                                LocationWaste = "Gutter at Liquid plant for Alkaline";
                               } else {
                                 LocationWaste = "";
                               }
@@ -278,29 +278,37 @@ class _Page1BodyState extends State<Page1Body> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 12), // เว้นระยะระหว่าง Dropdown
+
+                      const SizedBox(width: 12),
+
+                      // 🔒 🔒 ล็อก dropdown ถ้าเป็น Acid / Chrom / Nox Rust
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          dropdownColor: Colors.white,
-                          value: selectedPhysical,
-                          decoration: InputDecoration(
-                            labelText: "รูปแบบสาร",
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        child: IgnorePointer(
+                          ignoring: selectedType != "Alkaline", // ถ้าไม่ใช่ Alkaline → กดไม่ได้
+                          child: Opacity(
+                            opacity: selectedType != "Alkaline" ? 0.5 : 1, // ทำให้ดูจางๆ ตอนกดไม่ได้
+                            child: DropdownButtonFormField<String>(
+                              value: selectedPhysical,
+                              decoration: InputDecoration(
+                                labelText: "รูปแบบสาร",
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              items: (selectedType == "Alkaline" ? ["Liquid", "Powder"] : ["Liquid", "Powder", "Noxrust"]).map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                              onChanged: (val) {
+                                setState(() {
+                                  selectedPhysical = val;
+
+                                  if (selectedType == "Alkaline" && val == "Liquid") {
+                                    LocationWaste = "Gutter at Liquid plant for Alkaline";
+                                  } else if (selectedType == "Alkaline" && val == "Powder") {
+                                    LocationWaste = "IBC for Powder";
+                                  }
+                                });
+                              },
                             ),
                           ),
-                          items: (selectedType == "Alkaline" || selectedType == "Acid" || selectedType == "Chrom"
-                                  ? ["Liquid", "Powder"] // ถ้าเป็น Alkaline ให้แค่ 2 ตัวเลือก
-                                  : ["Liquid", "Powder", "Noxrust"])
-                              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                              .toList(),
-                          onChanged: (val) {
-                            setState(() {
-                              selectedPhysical = val;
-                            });
-                          },
                         ),
                       ),
                     ],
