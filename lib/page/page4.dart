@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:newmaster/page/P3Search/P3Search.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Page4 extends StatelessWidget {
   final List<dynamic> data;
@@ -91,7 +93,9 @@ class Page4 extends StatelessWidget {
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: (item["ChemicalType"] == "Chrom")
+                                  ? Colors.red.shade100 // 🔥 พื้นหลังแดงอ่อนเมื่อเป็น Chorm
+                                  : Colors.white, // ปกติพื้นหลังขาว
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -138,7 +142,7 @@ class Page4 extends StatelessWidget {
                                                       style: const TextStyle(
                                                         fontSize: 16,
                                                         fontWeight: FontWeight.bold,
-                                                        color: Colors.blueGrey,
+                                                        color: Colors.blueGrey, // ❗ สีเดิม ไม่เปลี่ยน
                                                       ),
                                                     ),
                                                     const SizedBox(height: 4),
@@ -161,6 +165,7 @@ class Page4 extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
                                 // 🔹 ปุ่มเครื่องพิมพ์
                                 _PrintButton(item: item),
                               ],
@@ -365,65 +370,37 @@ class _PrintButtonState extends State<_PrintButton> {
   }
 
   Future<void> _sendToPrinter(Map<String, dynamic> item) async {
-    final printerIp = '172.26.20.4';
-    final printerPort = 9100;
+    const expressUrl = "http://172.23.10.168:3006/print"; // แก้เป็น IP server
 
-    final uneq = item["Uneg"] ?? "-";
-    final product = item["ProductName"] ?? "-";
-    final type = item["ChemicalType"] ?? "-";
-    final prodDate = item["ProductionDate"] ?? "-";
-    final expDate = item["ExpireDate"] ?? "-";
-    final keep = item["LocationKeep"] ?? "-";
-    final waste = item["LocationWaste"] ?? "-";
-    final input = item["InputData"] ?? "-";
+    final payload = {
+      "Uneg": item["Uneg"] ?? "-",
+      "ProductName": item["ProductName"] ?? "-",
+      "ChemicalType": item["ChemicalType"] ?? "-",
+      "ProductionDate": item["ProductionDate"] ?? "-",
+      "ExpireDate": item["ExpireDate"] ?? "-",
+      "LocationKeep": item["LocationKeep"] ?? "-",
+      "LocationWaste": item["LocationWaste"] ?? "-",
+      "InputData": item["InputData"] ?? "-",
+      "Test1": item["Test1"] ?? "-",
+      "Test2": item["Test2"] ?? "-",
+      "Test3": item["Test3"] ?? "-",
+      "Test4": item["Test4"] ?? "-"
+    };
 
     try {
-      final qrZpl = await _generateQrZpl(uneq, size: 250);
-
-      final zpl = '''
-^XA
-^PW1100
-^LL780
-^CF0,45
-^FO40,40^FDProduct:^FS
-^FO250,40^FD$product^FS
-^FO40,100^FDChemical:^FS
-^FO250,100^FD$type^FS
-^FO40,160^FDProd Date:^FS
-^FO250,160^FD$prodDate^FS
-^FO40,220^FDExpire:^FS
-^FO250,220^FD$expDate^FS
-^FO40,280^FDKeep:^FS
-^FO250,280^FD$keep^FS
-^FO40,340^FDWaste:^FS
-^FO250,340^FD$waste^FS
-^FO40,400^FDInput:^FS
-^FO250,400^FD$input^FS
-^FO40,460^FDUneq:^FS
-^FO250,460^FD$uneq^FS
-^FO750,100
-$qrZpl
-^XZ
-''';
-
-      final socket = await Socket.connect(printerIp, printerPort, timeout: const Duration(seconds: 5));
-      socket.write(zpl);
-      await socket.flush();
-      await socket.close();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("✅ ส่งข้อมูลไปที่เครื่องพิมพ์: $uneq"),
-          duration: const Duration(seconds: 1),
-        ),
+      final res = await http.post(
+        Uri.parse(expressUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(payload),
       );
+
+      if (res.statusCode == 200) {
+        print("✔ ส่งสำเร็จ");
+      } else {
+        print("❌ Express error: ${res.body}");
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("❌ ไม่สามารถพิมพ์ได้: $e"),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      print("❌ Error: $e");
     }
   }
 

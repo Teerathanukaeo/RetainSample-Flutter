@@ -144,7 +144,7 @@ class _Page1BodyState extends State<Page1Body> {
 
                       try {
                         final response = await Dio().get(
-                          "http://127.0.0.1:3006/GETNAME",
+                          "http://172.23.10.168:3006/GETNAME",
                           queryParameters: {"Name": value},
                         );
                         print("Response: ${response.data}");
@@ -365,7 +365,7 @@ class _Page1BodyState extends State<Page1Body> {
                         onPressed: () async {
                           // --- POST DATA CODE ---
                           final response = await Dio().post(
-                            "http://127.0.0.1:3006/SENTDATA",
+                            "http://172.23.10.168:3006/SENTDATA",
                             data: {
                               "ProductName": chemicalName.isNotEmpty ? chemicalName : "",
                               "ChemicalType": selectedType ?? "",

@@ -12,7 +12,7 @@ class Page3 extends StatelessWidget {
 }
 
 class Page3Body extends StatefulWidget {
-  final Map<String, dynamic>? selectedItem; // ✅ รับค่าจาก Navigator.push
+  final Map<String, dynamic>? selectedItem;
 
   const Page3Body({Key? key, this.selectedItem}) : super(key: key);
 
@@ -30,7 +30,6 @@ class _Page3BodyState extends State<Page3Body> {
   void initState() {
     super.initState();
     if (widget.selectedItem != null) {
-      // ✅ ถ้ามีข้อมูลจากหน้าแรก ให้ใส่เลย
       DetailUneq = [widget.selectedItem!];
       Uneq = widget.selectedItem!["Uneg"] ?? "";
       _searchController.text = Uneq;
@@ -56,106 +55,107 @@ class _Page3BodyState extends State<Page3Body> {
               ),
             ],
           ),
+
+          // ⭐⭐⭐ ให้ทั้งหน้าเลื่อนได้ ⭐⭐⭐
           child: Column(
             children: [
-              // 🔸 ส่วนหัวค้นหา
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFC107), Color(0xFFFFB300)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "ค้นหาตัวอย่าง",
-                      style: TextStyle(
-                        fontSize: 26,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 14, right: 8),
-                            child: Icon(Icons.search, color: Colors.grey),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // 🔸 ส่วนหัวค้นหา
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFC107), Color(0xFFFFB300)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              decoration: const InputDecoration(
-                                hintText: "พิมพ์รหัส Unique หรือชื่อสารเคมี...",
-                                border: InputBorder.none,
-                                hintStyle: TextStyle(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "ค้นหาตัวอย่าง",
+                              style: TextStyle(
+                                fontSize: 26,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                              onChanged: (value) async {
-                                setState(() => Uneq = value);
-                                if (value.isEmpty) {
-                                  setState(() => DetailUneq = []);
-                                  return;
-                                }
-
-                                try {
-                                  final response = await Dio().get(
-                                    "http://172.23.10.168:3006/GETUNEG",
-                                    queryParameters: {"Uneq": Uneq},
-                                  );
-
-                                  setState(() {
-                                    DetailUneq = (response.data is List && response.data.isNotEmpty) ? response.data : [];
-                                  });
-                                } catch (e) {
-                                  print("Error: $e");
-                                }
-                              },
                             ),
-                          ),
-                          if (_searchController.text.isNotEmpty)
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.grey),
-                              onPressed: () {
-                                setState(() {
-                                  _searchController.clear();
-                                  DetailUneq = [];
-                                });
-                              },
-                            )
-                        ],
+                            const SizedBox(height: 6),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 14, right: 8),
+                                    child: Icon(Icons.search, color: Colors.grey),
+                                  ),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _searchController,
+                                      decoration: const InputDecoration(
+                                        hintText: "พิมพ์รหัส Unique",
+                                        border: InputBorder.none,
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                      ),
+                                      onChanged: (value) async {
+                                        setState(() => Uneq = value);
+                                        if (value.isEmpty) {
+                                          setState(() => DetailUneq = []);
+                                          return;
+                                        }
+
+                                        try {
+                                          final response = await Dio().get(
+                                            "http://172.23.10.168:3006/GETUNEG",
+                                            queryParameters: {"Uneq": Uneq},
+                                          );
+
+                                          setState(() {
+                                            DetailUneq = (response.data is List && response.data.isNotEmpty) ? response.data : [];
+                                          });
+                                        } catch (e) {
+                                          print("Error: $e");
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  if (_searchController.text.isNotEmpty)
+                                    IconButton(
+                                      icon: const Icon(Icons.close, color: Colors.grey),
+                                      onPressed: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          DetailUneq = [];
+                                        });
+                                      },
+                                    )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-              // 🔸 ส่วนข้อมูลรายละเอียด
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: AnimatedSwitcher(
+                      // 🔸 ส่วนข้อมูลรายละเอียด
+                      AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
                         child: DetailUneq.isEmpty
                             ? const Padding(
@@ -171,7 +171,6 @@ class _Page3BodyState extends State<Page3Body> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // รูปขวด
                                       Expanded(
                                         flex: 2,
                                         child: Image.asset(
@@ -181,7 +180,6 @@ class _Page3BodyState extends State<Page3Body> {
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      // รายละเอียด
                                       Expanded(
                                         flex: 3,
                                         child: Column(
@@ -203,9 +201,8 @@ class _Page3BodyState extends State<Page3Body> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 15),
                                   const Divider(thickness: 1.2),
-
                                   const Text(
                                     "📍 สถานที่ทิ้ง",
                                     style: TextStyle(
@@ -215,8 +212,6 @@ class _Page3BodyState extends State<Page3Body> {
                                     ),
                                   ),
                                   const SizedBox(height: 10),
-
-                                  // รูปภาพสถานที่
                                   Container(
                                     height: 208,
                                     width: double.infinity,
@@ -250,12 +245,13 @@ class _Page3BodyState extends State<Page3Body> {
                                             ),
                                           ),
                                   ),
+                                  const SizedBox(height: 40),
                                 ],
                               ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
@@ -288,28 +284,21 @@ class _Page3BodyState extends State<Page3Body> {
     );
   }
 
-  // 🔹 Widget ย่อยสำหรับ text ข้อมูล
+  // 🔹 Widget แสดงข้อมูลแบบมีไอคอน
   Widget infoText(String label, String? value, {IconData? icon}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1.4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon ?? Icons.label_outline, // ถ้าไม่ส่ง icon จะใช้ค่า default
-            size: 18,
-            color: Colors.blueGrey.shade600,
-          ),
+          Icon(icon ?? Icons.label_outline, size: 18, color: Colors.blueGrey.shade600),
           const SizedBox(width: 8),
           Expanded(
             child: RichText(
               text: TextSpan(
                 style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.3),
                 children: [
-                  TextSpan(
-                    text: "$label: ",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  TextSpan(text: "$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(text: value ?? "-"),
                 ],
               ),
@@ -320,7 +309,7 @@ class _Page3BodyState extends State<Page3Body> {
     );
   }
 
-  // 🔹 Widget ย่อยสำหรับ bottom nav
+  // 🔹 Bottom Navigation
   Widget bottomNavItem(IconData icon, String label, int index, BuildContext context, Widget? page) {
     bool selected = selectedIndex == index;
     return Expanded(

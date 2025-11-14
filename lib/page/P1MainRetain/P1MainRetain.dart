@@ -85,6 +85,14 @@ class _Page1BodyState extends State<Page1Body> {
   String expireDate = "";
   String alertExpireDate = ""; // วัน Expire หลัก
   String LocationWaste = "";
+  String test90 = "";
+  String alertTest90 = "";
+  String test180 = "";
+  String alertTest180 = "";
+  String test270 = "";
+  String alertTest270 = "";
+  String test365 = "";
+  String alertTest365 = "";
   List<String> testDates = []; // วัน Test แต่ละตัว
   List<String> testOptions = ["90 Day", "180 Day", "270 Day", "365 Day"];
   List<String> selectedTests = [];
@@ -372,38 +380,73 @@ class _Page1BodyState extends State<Page1Body> {
                               if (selectedDate.isNotEmpty) {
                                 DateTime prodDate = DateTime.parse(selectedDate);
 
-                                // ----- วัน Test และ AlertTest -----
-                                if (selectedTests.isNotEmpty) {
-                                  testDates = selectedTests.map((t) {
-                                    int days = int.parse(t.split(" ")[0]);
-                                    DateTime testDate = prodDate.add(Duration(days: days));
-                                    return "${testDate.toLocal()}".split(' ')[0];
-                                  }).toList();
+                                // Reset ทุกตัวแปรก่อน
+                                test90 = "";
+                                test180 = "";
+                                test270 = "";
+                                test365 = "";
+                                alertTest90 = "";
+                                alertTest180 = "";
+                                alertTest270 = "";
+                                alertTest365 = "";
 
-                                  alertTestDates = testDates.map((d) {
-                                    DateTime testDate = DateTime.parse(d);
-                                    DateTime alertDate = testDate.subtract(const Duration(days: 3));
-                                    return "${alertDate.toLocal()}".split(' ')[0];
-                                  }).toList();
+                                // ========================
+                                //   เก็บ Test แยกตามประเภท
+                                // ========================
+                                if (selectedTests.contains("90 Day")) {
+                                  DateTime d = prodDate.add(const Duration(days: 90));
+                                  test90 = "${d.toLocal()}".split(' ')[0];
 
-                                  // ----- Expire และ AlertExpire เมื่อเลือก Test -----
-                                  DateTime defaultExpire = prodDate.add(const Duration(days: 365));
-                                  if (selectedTests.any((t) => t.contains("365"))) {
-                                    defaultExpire = prodDate.add(const Duration(days: 365 + 14));
-                                  }
-                                  expireDate = "${defaultExpire.toLocal()}".split(' ')[0];
-                                  alertExpireDate = "${defaultExpire.subtract(const Duration(days: 3)).toLocal()}".split(' ')[0];
-                                } else {
-                                  // ----- Expire และ AlertExpire เมื่อไม่เลือก Test หรือยกเลิกทั้งหมด -----
-                                  testDates = [];
-                                  alertTestDates = [];
-                                  DateTime defaultExpire = prodDate.add(const Duration(days: 364));
-                                  expireDate = "${defaultExpire.toLocal()}".split(' ')[0];
-                                  alertExpireDate = "${defaultExpire.subtract(const Duration(days: 3)).toLocal()}".split(' ')[0];
+                                  DateTime ad = d.subtract(const Duration(days: 3));
+                                  alertTest90 = "${ad.toLocal()}".split(' ')[0];
                                 }
+
+                                if (selectedTests.contains("180 Day")) {
+                                  DateTime d = prodDate.add(const Duration(days: 180));
+                                  test180 = "${d.toLocal()}".split(' ')[0];
+
+                                  DateTime ad = d.subtract(const Duration(days: 3));
+                                  alertTest180 = "${ad.toLocal()}".split(' ')[0];
+                                }
+
+                                if (selectedTests.contains("270 Day")) {
+                                  DateTime d = prodDate.add(const Duration(days: 270));
+                                  test270 = "${d.toLocal()}".split(' ')[0];
+
+                                  DateTime ad = d.subtract(const Duration(days: 3));
+                                  alertTest270 = "${ad.toLocal()}".split(' ')[0];
+                                }
+
+                                if (selectedTests.contains("365 Day")) {
+                                  DateTime d = prodDate.add(const Duration(days: 365));
+                                  test365 = "${d.toLocal()}".split(' ')[0];
+
+                                  DateTime ad = d.subtract(const Duration(days: 3));
+                                  alertTest365 = "${ad.toLocal()}".split(' ')[0];
+                                }
+
+                                // ========================
+                                // Expire Date
+                                // ========================
+                                DateTime defaultExpire = prodDate.add(const Duration(days: 365));
+
+                                // ถ้าเลือก 365 วัน → +14 วัน
+                                if (selectedTests.contains("365 Day")) {
+                                  defaultExpire = prodDate.add(const Duration(days: 365 + 14));
+                                }
+
+                                expireDate = "${defaultExpire.toLocal()}".split(' ')[0];
+                                alertExpireDate = "${defaultExpire.subtract(const Duration(days: 3)).toLocal()}".split(' ')[0];
                               } else {
-                                testDates = [];
-                                alertTestDates = [];
+                                // ถ้าไม่มีวันที่ผลิต
+                                test90 = "";
+                                test180 = "";
+                                test270 = "";
+                                test365 = "";
+                                alertTest90 = "";
+                                alertTest180 = "";
+                                alertTest270 = "";
+                                alertTest365 = "";
                                 expireDate = "";
                                 alertExpireDate = "";
                               }
@@ -501,14 +544,14 @@ class _Page1BodyState extends State<Page1Body> {
                                     "LocationWaste": LocationWaste,
                                     "Pcs": selectedPcs ?? "",
                                     "InputData": selectedUser ?? "",
-                                    "Test1": testDates.length > 0 ? testDates[0] : "",
-                                    "AlertTest1": alertTestDates.length > 0 ? alertTestDates[0] : "",
-                                    "Test2": testDates.length > 1 ? testDates[1] : "",
-                                    "AlertTest2": alertTestDates.length > 1 ? alertTestDates[1] : "",
-                                    "Test3": testDates.length > 2 ? testDates[2] : "",
-                                    "AlertTest3": alertTestDates.length > 2 ? alertTestDates[2] : "",
-                                    "Test4": testDates.length > 3 ? testDates[3] : "",
-                                    "AlertTest4": alertTestDates.length > 3 ? alertTestDates[3] : "",
+                                    "Test1": test90 ?? "",
+                                    "AlertTest1": alertTest90 ?? "",
+                                    "Test2": test180 ?? "",
+                                    "AlertTest2": alertTest180 ?? "",
+                                    "Test3": test270 ?? "",
+                                    "AlertTest3": alertTest270 ?? "",
+                                    "Test4": test365 ?? "",
+                                    "AlertTest4": alertTest365 ?? "",
                                     "Status": "Inprocess",
                                   },
                                   options: Options(validateStatus: (status) => true),
@@ -557,7 +600,7 @@ class _Page1BodyState extends State<Page1Body> {
                               )
                             : const Icon(Icons.save, color: Colors.white),
                         label: Text(
-                          isSaving ? "กำลังบันทึก..." : "บันทึกและพิมพ์",
+                          isSaving ? "กำลังบันทึก..." : "บันทึก",
                           style: const TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ),
