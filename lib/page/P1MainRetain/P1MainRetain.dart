@@ -93,6 +93,7 @@ class _Page1BodyState extends State<Page1Body> {
   String alertTest270 = "";
   String test365 = "";
   String alertTest365 = "";
+  String remark = "";
   List<String> testDates = []; // วัน Test แต่ละตัว
   List<String> testOptions = ["90 Day", "180 Day", "270 Day", "365 Day"];
   List<String> selectedTests = [];
@@ -107,12 +108,12 @@ class _Page1BodyState extends State<Page1Body> {
 // UI สำหรับแต่ละ Step (แก้ไขให้ระยะวงกลมเท่ากัน)
 // -----------------------------
   Widget _buildStep(int stepNumber, String title, Widget content) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10), // เพิ่มระยะห่างเท่ากันทุก step
+    return IntrinsicHeight(
+      // ให้ Row ปรับความสูงตามเนื้อหา
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch, // ให้เต็มความสูง
         children: [
-          // ===== วงกลมตัวเลข =====
+          // ===== วงกลมตัวเลข + เส้น =====
           Column(
             children: [
               CircleAvatar(
@@ -124,17 +125,16 @@ class _Page1BodyState extends State<Page1Body> {
                 ),
               ),
               if (stepNumber < 7)
-                Container(
-                  width: 2,
-                  height: 40, // ความสูงของเส้นแนวตั้งคงที่ทุก step
-                  color: Colors.blueGrey[300],
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: Colors.blueGrey[300],
+                  ),
                 ),
             ],
           ),
 
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
 
           // ===== เนื้อหาแต่ละ Step =====
           Expanded(
@@ -192,44 +192,65 @@ class _Page1BodyState extends State<Page1Body> {
                 _buildStep(
                   1,
                   "ชื่อสารเคมี",
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: "กรอกชื่อสารเคมี",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onChanged: (value) async {
-                      setState(() {
-                        chemicalName = value;
-                        selectedType = null; // รีเซ็ต Dropdown
-                        selectedPhysical = null;
-                        generatedUneg = null;
-                      });
-                      if (value.isNotEmpty) {
-                        generatedUneg = "UNEG${DateTime.now().millisecondsSinceEpoch}";
-                      }
-                      try {
-                        final response = await Dio().get(
-                          "http://172.23.10.168:3006/GETNAME",
-                          queryParameters: {"Name": value},
-                        );
-                        print("Response: ${response.data}");
-                        if (response.data != null && response.data.length > 0) {
+                  Column(
+                    children: [
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: "กรอกชื่อสารเคมี",
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onChanged: (value) async {
                           setState(() {
-                            selectedType = "Chrom";
-                            selectedPhysical = "Liquid";
+                            chemicalName = value;
+                            selectedType = null; // รีเซ็ต Dropdown
+                            selectedPhysical = null;
+                            generatedUneg = null;
                           });
-                        }
-                      } catch (e) {
-                        print("Error: $e");
-                      }
-                    },
+                          if (value.isNotEmpty) {
+                            generatedUneg = "UNEG${DateTime.now().millisecondsSinceEpoch}";
+                          }
+                          try {
+                            final response = await Dio().get(
+                              "http://172.23.10.168:3006/GETNAME",
+                              queryParameters: {"Name": value},
+                            );
+                            print("Response: ${response.data}");
+                            if (response.data != null && response.data.length > 0) {
+                              setState(() {
+                                selectedType = "Chrom";
+                                selectedPhysical = "Liquid";
+                              });
+                            }
+                          } catch (e) {
+                            print("Error: $e");
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      // 🔹 ช่องหมายเหตุ
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: "หมายเหตุ",
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            remark = value; // เก็บค่าไว้ในตัวแปร remark
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
-
+                const SizedBox(height: 20),
                 // Step 2
                 _buildStep(
                   2,
@@ -314,7 +335,7 @@ class _Page1BodyState extends State<Page1Body> {
                     ],
                   ),
                 ),
-
+                const SizedBox(height: 20),
                 // Step 3
                 _buildStep(
                   3,
@@ -357,7 +378,7 @@ class _Page1BodyState extends State<Page1Body> {
                     ],
                   ),
                 ),
-
+                const SizedBox(height: 20),
                 // Step 4
                 _buildStep(
                   4,
@@ -465,6 +486,7 @@ class _Page1BodyState extends State<Page1Body> {
                     }).toList(),
                   ),
                 ),
+                const SizedBox(height: 20),
                 _buildStep(
                   5,
                   "จำนวน",
@@ -483,6 +505,7 @@ class _Page1BodyState extends State<Page1Body> {
                     },
                   ),
                 ),
+                const SizedBox(height: 20),
                 // Step 5
                 _buildStep(
                   6,
@@ -502,6 +525,7 @@ class _Page1BodyState extends State<Page1Body> {
                     },
                   ),
                 ),
+                const SizedBox(height: 20),
                 // Step 6
                 _buildStep(
                   7,
@@ -560,6 +584,7 @@ class _Page1BodyState extends State<Page1Body> {
                                     "AlertTest3": alertTest270 ?? "",
                                     "Test4": test365 ?? "",
                                     "AlertTest4": alertTest365 ?? "",
+                                    "Remark": remark ?? "",
                                     "Status": "Inprocess",
                                   },
                                   options: Options(validateStatus: (status) => true),

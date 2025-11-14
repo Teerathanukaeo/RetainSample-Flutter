@@ -384,7 +384,8 @@ class _PrintButtonState extends State<_PrintButton> {
       "Test1": item["Test1"] ?? "-",
       "Test2": item["Test2"] ?? "-",
       "Test3": item["Test3"] ?? "-",
-      "Test4": item["Test4"] ?? "-"
+      "Test4": item["Test4"] ?? "-",
+      "Remark": item["Remark"] ?? "-"
     };
 
     try {
